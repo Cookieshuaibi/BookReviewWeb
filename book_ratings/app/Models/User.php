@@ -42,8 +42,26 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
-    public function Reviews()
+    // public function Reviews()
+    // {
+    //     return $this->hasMany(Reviews::class);
+    // }
+
+    public function reviews()
     {
         return $this->hasMany(Reviews::class);
+    }
+    public function books()
+    {
+        return $this->hasMany(Books::class,'user_id');
+    }
+
+    public function roles()
+    {
+        return $this->belongsToMany(Role::class);
+    }
+    public function hasRoles($roleName)
+    {
+        return $this->roles()->where('name', $roleName)->exists();
     }
 }

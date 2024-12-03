@@ -10,12 +10,18 @@ class Reviews extends Model
     use HasFactory;
     protected $table = 'reviews';
     protected $fillable = ['book_id', 'user_id', 'rating', 'comment'];
-    public function book()
-    {
-        return $this->belongsTo(Books::class, 'book_id');
-    }
+
     public function user()
     {
-        return $this->belongsTo(User::class, 'user_id');
+        return $this->belongsTo(User::class);
+    }
+
+    public function reviewable()
+    {
+        return $this->morphTo();
+    }
+    public function book()
+    {
+        return $this->belongsTo(Books::class);
     }
 }

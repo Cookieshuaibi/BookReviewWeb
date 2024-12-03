@@ -1,5 +1,9 @@
 <?php
 
+use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -14,5 +18,15 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    return view('welcome');
+//    return view('welcome');
+    echo "Hello World";
 });
+
+Route::any('/register', [RegisterController::class, 'register'])->name('register');
+
+Route::any('/login', [LoginController::class, 'login'])->name('login');
+
+Route::get('/profile',[UserController::class, 'profile'])->name('profile')->middleware('auth');
+Route::post('/logout', [LoginController::class, 'logout'])->name('logout')->middleware('auth');
+
+Route::get('/home', [HomeController::class, 'index'])->name('home');

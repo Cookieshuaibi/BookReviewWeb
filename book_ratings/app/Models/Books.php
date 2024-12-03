@@ -9,8 +9,9 @@ class Books extends Model
 {
     use HasFactory;
     protected $fillable = ['title', 'author','summary', 'year', 'genre', 'description','average_rating','image_url','publisher','language','isbn'];
-    public function reeviews()
+
+ public function reviews()
     {
-        return $this->hasMany(Reviews::class);
+        return $this->morphMany(Reviews::class, 'reviewable');
     }
 }

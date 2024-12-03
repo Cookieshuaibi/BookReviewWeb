@@ -11,14 +11,13 @@ class BookSeeder extends Seeder
 {
     public function run()
     {
-        $users = User::all();
         $faker = Faker::create();
-        foreach (range(1, 10) as $index) {
-            $user = $users->random();
+        $users = User::all();
+        foreach (range(1, 10) as $index) { // 创建 10 本书
             Books::create([
                 'title' => $faker->sentence(3),
+                'user_id'=>$users->random()->id,
                 'summary'=> $faker->text(200),
-                'user_id'=>$user->id,
                 'author'=> $faker->name,
                 'average_rating' => $faker->randomFloat(2, 1, 5),
                 'image_url' => $faker->imageUrl(),
