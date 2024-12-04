@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Books;
+use App\Models\Reviews;
 use Illuminate\Http\Request;
 
 class HomeController extends Controller
@@ -13,7 +15,7 @@ class HomeController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('auth');
+      //  $this->middleware('auth');
     }
 
     /**
@@ -23,6 +25,9 @@ class HomeController extends Controller
      */
     public function index()
     {
-        return view('home');
+
+        $latestReviews = Reviews::latest()->with('reviewable')->paginate(6);
+        $popularBooks = Books::where('average_rating', '>', 0)->orderBy('average_rating', 'desc')->limit(6)->get();
+        return view('home', compact('latestReviews', 'popularBooks'));
     }
 }

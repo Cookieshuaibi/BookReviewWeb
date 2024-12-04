@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\Books;
 use App\Events\ReviewPosted;
 use App\Events\ReviewCreated;
+use Illuminate\Support\Facades\Auth;
 
 
 class BookController extends Controller
@@ -21,6 +22,9 @@ class BookController extends Controller
 
      public function create(request $request)
      {
+         if(Auth::check()&& !(Auth::user()->hasRoles('admin') || Auth::user()->hasRoles('author'))){
+             abort(403);
+         }
         if ($request->isMethod('post')) {
             $validatedData = $request->validate([
                 'title' => 'required|string|max:255',
@@ -60,6 +64,9 @@ class BookController extends Controller
      public function edit(request $request, $book_id)
      {
         $book = Books::find($book_id);
+         if(Auth::check()&& !(Auth::user()->hasRoles('admin') || Auth::user()->hasRoles('author'))){
+             abort(403);
+         }
         if ($book->user_id !== Auth()->user()->id) {
             abort(403);
         }
@@ -103,6 +110,9 @@ class BookController extends Controller
      }
      public function delete(request $request, $book_id)
      {
+         if(Auth::check()&& !(Auth::user()->hasRoles('admin') || Auth::user()->hasRoles('author'))){
+             abort(403);
+         }
         $book = Books::find($book_id);
         if ($book->user_id !== Auth()->user()->id) {
             abort(403);
@@ -114,12 +124,15 @@ class BookController extends Controller
 
      public function index(request $request)
      {
-        $books = Books::orderBy('id', 'desc')->paginate(10);
+        $books = Books::orderBy('id', 'desc')->paginate(12);
         return view('book.index', compact( 'books'));
      }
 
      public function add_review(Request $request, $book_id)
     {
+        if (Auth::guest()) {
+            return response()->json(['success' => false, 'message' => 'You need to login to add review.']);
+        }
         $book = Books::find($book_id);
         if ($request->isMethod('post')) {
             $validatedData = $request->validate([
@@ -140,7 +153,7 @@ class BookController extends Controller
                 return response()->json([
                     'success' => true,
                     'message' => 'Review added successfully!',
-                    'data'=>['rating'=>$review->rating, 'comment'=>$review->comment, 'user_name'=>$review->user->name, 'created_at'=>$review->created_at->diffForHumans()],
+                    'data'=>['user_url'=>route('users.show', $review->user_id), 'rating'=>$review->rating, 'comment'=>$review->comment, 'user_name'=>$review->user->name, 'created_at'=>$review->created_at->diffForHumans()],
                     'average_rating' => $book->average_rating,
                 ]);
             } else {
@@ -149,6 +162,12 @@ class BookController extends Controller
         }
 
         return view('book.add_review', compact('book'));
+    }
+    public function reviews(Request $request, $book_id)
+    {
+        $book = Books::find($book_id);
+        $reviews = $book->reviews()->paginate(10);
+        return view('book.reviews', compact('book','reviews'));
     }
 
 }
