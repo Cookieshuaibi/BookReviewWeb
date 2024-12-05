@@ -40,6 +40,12 @@ class RoleSeeder extends Seeder
                 $user->roles()->attach($roles->random(1)->first());
             }
 
+            $admin_role_id = RoleModel::where('name', 'admin')->first();
+            User::create([
+                'name' => 'admin',
+                'email' => 'admin@admin.com',
+                'password' => password_hash('password', PASSWORD_DEFAULT),
+            ])->roles()->attach($admin_role_id);
             // 提交事务
             DB::commit();
         } catch (\Exception $e) {
