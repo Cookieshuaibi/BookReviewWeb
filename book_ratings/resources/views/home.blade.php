@@ -39,7 +39,8 @@
                 <div class="col-md-4 mb-4">
                     <div class="card h-100">
                         <a href="{{ route('books.show', $book->id) }}">
-                            <img src="{{ $book->image_url }}" class="card-img-top" alt="{{ $book->title }}">
+                            <img src="{{ filter_var($book->image_url, FILTER_VALIDATE_URL) ? $book->image_url : Storage::url($book->image_url) }}"
+                                 alt="{{ $book->title }} Cover" class="card-img-top" style="max-width: 100%; max-height: 300px; object-fit: cover;">
                         </a>
                         <div class="card-body">
                             <h5 class="card-title">{{ $book->title }}</h5>
