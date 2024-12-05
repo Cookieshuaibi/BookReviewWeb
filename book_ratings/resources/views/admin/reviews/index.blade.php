@@ -43,7 +43,6 @@
                                         <td>{{ $review->comment }}</td>
                                         <td>{{ $review->created_at }}</td>
                                         <td>
-                                            <a href="{{ route('admin.reviews.edit', $review->id) }}" class="btn btn-primary">{{ __('Edit') }}</a>
                                             <form action="{{ route('admin.reviews.destroy', $review->id) }}" method="POST" style="display: inline-block;">
                                                 @csrf
                                                 @method('DELETE')

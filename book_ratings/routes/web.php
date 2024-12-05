@@ -11,6 +11,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\Admin\UserController as AdminUserController;
 use App\Http\Controllers\Admin\BookController as AdminBookController;
 use App\Http\Controllers\Admin\ReviewController as AdminReviewController;
+use App\Http\Controllers\Admin\RoleController as AdminRoleController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ReviewController;
 
@@ -65,4 +66,6 @@ Route::prefix('/admin')->middleware('role:admin')->group(function () {
     Route::resource('/users', AdminUserController::class)->names('admin.users');
     Route::resource('/reviews', AdminReviewController::class)->names('admin.reviews');
     Route::resource('/books', AdminBookController::class)->names('admin.books');
+    Route::resource('/roles', AdminRoleController::class)->names('admin.roles');
+    Route::get('/roles/assign_users/{role}', [AdminRoleController::class, 'assign_users'])->name('admin.roles.assign_users');
 });

@@ -52,6 +52,7 @@
                                     <a class="dropdown-item" href="{{ route('admin.books.index') }}">Books</a>
                                     <a class="dropdown-item" href="{{ route('admin.reviews.index') }}">Reviews</a>
                                     <a class="dropdown-item" href="{{ route('admin.users.index') }}">Users</a>
+                                    <a class="dropdown-item" href="{{ route('admin.roles.index') }}">Roles</a>
                             </div>
                         </li>
                         @endif

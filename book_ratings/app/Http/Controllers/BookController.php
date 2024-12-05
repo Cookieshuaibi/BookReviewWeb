@@ -1,8 +1,10 @@
 <?php
+
 namespace App\Http\Controllers;
 
 use App\Models\Reviews;
 use App\Models\User;
+use App\Notifications\NewReviewNotification;
 use Illuminate\Http\Request;
 use App\Models\Books;
 use App\Events\ReviewPosted;
@@ -18,13 +20,13 @@ class BookController extends Controller
             $query->latest()->take(10); // get latest 10 reviews
         }])->find($book_id);
         return view('book.show', compact('book'));
-     }
+    }
 
-     public function create(request $request)
-     {
-         if(Auth::check()&& !(Auth::user()->hasRoles('admin') || Auth::user()->hasRoles('author'))){
-             abort(403);
-         }
+    public function create(request $request)
+    {
+        if (Auth::check() && !(Auth::user()->hasRoles('admin') || Auth::user()->hasRoles('author'))) {
+            abort(403);
+        }
         if ($request->isMethod('post')) {
             $validatedData = $request->validate([
                 'title' => 'required|string|max:255',
@@ -39,9 +41,9 @@ class BookController extends Controller
                 'language' => 'required|string|max:255|in:en,fr,es,de,it,sp,iu',
                 'isbn' => 'required|string|max:25',
             ]);
-    
+
             $imagePath = $request->file('image_url')->store('public/images');
-    
+
             $book = new Books();
             $book->title = $validatedData['title'];
             $book->author = $validatedData['author'];
@@ -55,18 +57,19 @@ class BookController extends Controller
             $book->language = $validatedData['language'];
             $book->isbn = $validatedData['isbn'];
             $book->user_id = Auth()->user()->id;
-            if($book->save()){
-            return redirect()->route('books.index');
+            if ($book->save()) {
+                return redirect()->route('books.index');
             }
         }
         return view('book.create');
-     }
-     public function edit(request $request, $book_id)
-     {
+    }
+
+    public function edit(request $request, $book_id)
+    {
         $book = Books::find($book_id);
-         if(Auth::check()&& !(Auth::user()->hasRoles('admin') || Auth::user()->hasRoles('author'))){
-             abort(403);
-         }
+        if (Auth::check() && !(Auth::user()->hasRoles('admin') || Auth::user()->hasRoles('author'))) {
+            abort(403);
+        }
         if ($book->user_id !== Auth()->user()->id) {
             abort(403);
         }
@@ -84,13 +87,13 @@ class BookController extends Controller
                 'language' => 'required|string|max:255|in:en,fr,es,de,it,sp,iu',
                 'isbn' => 'required|string|max:25',
             ]);
-    
-            if($request->hasFile('image_url')){
+
+            if ($request->hasFile('image_url')) {
                 $imagePath = $request->file('image_url')->store('public/images');
-            }else{
+            } else {
                 $imagePath = $book->image_url;
             }
-    
+
             $book->title = $validatedData['title'];
             $book->author = $validatedData['author'];
             $book->summary = $validatedData['summary'];
@@ -102,33 +105,34 @@ class BookController extends Controller
             $book->publisher = $validatedData['publisher'];
             $book->language = $validatedData['language'];
             $book->isbn = $validatedData['isbn'];
-            if($book->save()){
-            return redirect()->route('books.index');
+            if ($book->save()) {
+                return redirect()->route('books.index');
             }
         }
         return view('book.edit', compact('book'));
-     }
-     public function delete(request $request, $book_id)
-     {
-         if(Auth::check()&& !(Auth::user()->hasRoles('admin') || Auth::user()->hasRoles('author'))){
-             abort(403);
-         }
+    }
+
+    public function delete(request $request, $book_id)
+    {
+        if (Auth::check() && !(Auth::user()->hasRoles('admin') || Auth::user()->hasRoles('author'))) {
+            abort(403);
+        }
         $book = Books::find($book_id);
         if ($book->user_id !== Auth()->user()->id) {
             abort(403);
         }
-        if($book->delete()){
+        if ($book->delete()) {
             return redirect('/books');
         }
-     }
+    }
 
-     public function index(request $request)
-     {
+    public function index(request $request)
+    {
         $books = Books::orderBy('id', 'desc')->paginate(12);
-        return view('book.index', compact( 'books'));
-     }
+        return view('book.index', compact('books'));
+    }
 
-     public function add_review(Request $request, $book_id)
+    public function add_review(Request $request, $book_id)
     {
         if (Auth::guest()) {
             return response()->json(['success' => false, 'message' => 'You need to login to add review.']);
@@ -146,14 +150,15 @@ class BookController extends Controller
             $review->comment = $validatedData['comment'];
 
             if ($book->reviews()->save($review)) {
-               $user =  User::find($review->user_id);
-               $user->notify(new \App\Notifications\NewReviewNotification($review));
+                $user = User::find($review->user_id);
+                $review->with('reviewable');
+                $user->notify(new NewReviewNotification($review));
                 $book->average_rating = $book->reviews()->avg('rating');
                 $book->save();
                 return response()->json([
                     'success' => true,
                     'message' => 'Review added successfully!',
-                    'data'=>['user_url'=>route('users.show', $review->user_id), 'rating'=>$review->rating, 'comment'=>$review->comment, 'user_name'=>$review->user->name, 'created_at'=>$review->created_at->diffForHumans()],
+                    'data' => ['user_url' => route('users.show', $review->user_id), 'rating' => $review->rating, 'comment' => $review->comment, 'user_name' => $review->user->name, 'created_at' => $review->created_at->diffForHumans()],
                     'average_rating' => $book->average_rating,
                 ]);
             } else {
@@ -163,11 +168,12 @@ class BookController extends Controller
 
         return view('book.add_review', compact('book'));
     }
+
     public function reviews(Request $request, $book_id)
     {
         $book = Books::find($book_id);
         $reviews = $book->reviews()->paginate(10);
-        return view('book.reviews', compact('book','reviews'));
+        return view('book.reviews', compact('book', 'reviews'));
     }
 
 }

@@ -3,7 +3,7 @@
 @section('content')
 <div class="container mt-5">
     <h1 class="mb-4">Books List</h1>
-    <a href="{{ route('books.create') }}" class="btn btn-primary mb-4 right">Add New Book</a>
+    <a href="{{ route('admin.books.create') }}" class="btn btn-primary mb-4 right">Add New Book</a>
     <table class="table table-striped table-bordered">
         <thead class="table-dark">
             <tr>
@@ -35,8 +35,8 @@
                 <td>{{ $book->average_rating }}</td>
                 <td>
                     <!-- Add Edit and Delete buttons if needed -->
-                        <a href="{{ route('books.edit', $book) }}" class="btn btn-warning btn-sm">Edit</a>
-                        <form action="{{ route('books.destroy', $book) }}" method="POST" class="d-inline">
+                        <a href="{{ route('admin.books.edit', $book) }}" class="btn btn-warning btn-sm">Edit</a>
+                        <form action="{{ route('admin.books.destroy', $book) }}" method="POST" class="d-inline">
                             @csrf
                             @method('DELETE')
                             <button type="submit" class="btn btn-danger btn-sm">Delete</button>

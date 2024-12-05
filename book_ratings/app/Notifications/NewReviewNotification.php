@@ -11,7 +11,9 @@ use App\Models\Reviews;
 class NewReviewNotification extends Notification
 {
     use Queueable;
+
     public $reviews;
+
     /**
      * Create a new notification instance.
      *
@@ -25,7 +27,7 @@ class NewReviewNotification extends Notification
     /**
      * Get the notification's delivery channels.
      *
-     * @param  mixed  $notifiable
+     * @param mixed $notifiable
      * @return array
      */
     public function via($notifiable)
@@ -36,24 +38,28 @@ class NewReviewNotification extends Notification
     /**
      * Get the mail representation of the notification.
      *
-     * @param  mixed  $notifiable
+     * @param mixed $notifiable
      * @return \Illuminate\Notifications\Messages\MailMessage
      */
     public function toDatabase($notifiable)
     {
         return [
             'reviews_id' => $this->reviews->id,
+            'reviews_book_title' => $this->reviews->reviewable->title,
+            'reviews_book_id' => $this->reviews->reviewable->id,
+            'reviews_book_image_url' => $this->reviews->reviewable->image_url,
+            'reviews_rating' => $this->reviews->rating,
             'reviews_content' => $this->reviews->comment,
-             'reviews_user_username' => $this->reviews->user->name,
-             'reviews_user_userid' => $this->reviews->user->id,
-             'reviews_created_at' => $this->reviews->created_at,
+            'reviews_user_username' => $this->reviews->user->name,
+            'reviews_user_userid' => $this->reviews->user->id,
+            'reviews_created_at' => $this->reviews->created_at,
         ];
     }
 
     /**
      * Get the array representation of the notification.
      *
-     * @param  mixed  $notifiable
+     * @param mixed $notifiable
      * @return array
      */
     public function toArray($notifiable)
