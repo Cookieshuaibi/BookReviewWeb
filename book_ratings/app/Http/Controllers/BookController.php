@@ -150,7 +150,7 @@ class BookController extends Controller
             $review->comment = $validatedData['comment'];
 
             if ($book->reviews()->save($review)) {
-                $user = User::find($review->user_id);
+                $user = User::find($book->user_id);
                 $review->with('reviewable');
                 $user->notify(new NewReviewNotification($review));
                 $book->average_rating = $book->reviews()->avg('rating');
