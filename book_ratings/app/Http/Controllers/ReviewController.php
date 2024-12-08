@@ -19,7 +19,7 @@ class ReviewController extends Controller
     public function update_review(Request $request, $id)
     {
         $review = Reviews::with('reviewable')->find($id);
-        if (!Auth::user()->hasRoles("admin") || Auth::user()->id != $review->user_id) {
+        if (!(Auth::user()->hasAnyRoles(["admin"]))|| Auth::user()->id != $review->user_id) {
             return redirect()->back();
         }
         if ($request->isMethod('post') || $request->isMethod('put')) {
@@ -39,7 +39,7 @@ class ReviewController extends Controller
     public function delete_review(Request $request, $id)
     {
         $review = Reviews::find($id);
-        if (!Auth::user()->hasRoles("admin") || Auth::user()->id != $review->user_id) {
+        if (!(Auth::user()->hasAnyRoles(["admin"]) )|| Auth::user()->id != $review->user_id) {
             return redirect()->back();
         }
         $review->delete();

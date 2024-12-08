@@ -24,7 +24,7 @@ class BookController extends Controller
 
     public function create(request $request)
     {
-        if (Auth::check() && !(Auth::user()->hasRoles('admin') || Auth::user()->hasRoles('author'))) {
+        if (!Auth::check() && !(Auth::user()->hasAnyRoles(['admin', 'author']))) {
             abort(403);
         }
         if ($request->isMethod('post')) {
@@ -67,10 +67,10 @@ class BookController extends Controller
     public function edit(request $request, $book_id)
     {
         $book = Books::find($book_id);
-        if (Auth::check() && !(Auth::user()->hasRoles('admin') || Auth::user()->hasRoles('author'))) {
+        if (!Auth::check() && !(Auth::user()->hasAnyRoles(['admin', 'author']))) {
             abort(403);
         }
-        if ($book->user_id !== Auth()->user()->id) {
+        if (Auth::user()->hasRoles("author") && $book->user_id !== Auth()->user()->id) {
             abort(403);
         }
         if ($request->isMethod('post')) {
@@ -114,11 +114,11 @@ class BookController extends Controller
 
     public function delete(request $request, $book_id)
     {
-        if (Auth::check() && !(Auth::user()->hasRoles('admin') || Auth::user()->hasRoles('author'))) {
+        if (!Auth::check() && !(Auth::user()->hasAnyRoles(['admin', 'author']))) {
             abort(403);
         }
         $book = Books::find($book_id);
-        if ($book->user_id !== Auth()->user()->id) {
+        if (Auth::user()->hasRoles("author") && $book->user_id !== Auth()->user()->id) {
             abort(403);
         }
         if ($book->delete()) {
