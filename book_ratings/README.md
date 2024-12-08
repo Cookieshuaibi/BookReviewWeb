@@ -54,5 +54,6 @@ php artisan db:seed
 php artisan serve
 ```
 
+#### 6. 访问应用
 服务器启动后，您可以通过浏览器访问 `http://localhost:8000` 来查看应用运行情况。
 
