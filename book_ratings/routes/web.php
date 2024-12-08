@@ -41,9 +41,9 @@ Route::get('/home', [HomeController::class, 'index'])->name('home');
 Route::any('/search', [SearchController::class, 'search'])->name('search.search');
 
 /**books */
-Route::any('/books/create', [BookController::class, 'create'])->name('books.create')->middleware('role:admin,author');
-Route::any('/books/edit/{id}', [BookController::class, 'edit'])->name('books.edit')->middleware('role:admin,author');
-Route::delete('/books/{id}', [BookController::class, 'delete'])->name('books.destroy')->middleware('role:admin,author');
+Route::any('/books/create', [BookController::class, 'create'])->name('books.create')->middleware('role:author,admin');
+Route::any('/books/edit/{id}', [BookController::class, 'edit'])->name('books.edit')->middleware('role:author,admin');
+Route::delete('/books/{id}', [BookController::class, 'delete'])->name('books.destroy')->middleware('role:author,admin');
 Route::GET('/books', [BookController::class, 'index'])->name('books.index');
 Route::get('/books/show/{id}', [BookController::class, 'show'])->name('books.show');
 Route::post('/books/{book_id}/add_review', [BookController::class, 'add_review'])->name('books.add_review')->middleware('auth');

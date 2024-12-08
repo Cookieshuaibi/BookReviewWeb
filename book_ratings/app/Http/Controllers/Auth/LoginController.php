@@ -10,12 +10,12 @@ class LoginController extends Controller
 {
     public function login(Request $request)
     {
-        if($request->isMethod('post')){
+        if ($request->isMethod('post')) {
             $credentials = $request->validate([
                 'email' => 'required|email',
                 'password' => 'required',
             ]);
-            if(Auth::attempt($credentials)){
+            if (Auth::attempt($credentials)) {
                 $request->session()->regenerate();
                 return redirect()->intended('home');
             }
@@ -25,6 +25,7 @@ class LoginController extends Controller
         }
         return view('auth.login');
     }
+
     public function logout(Request $request)
     {
         // logout logic here

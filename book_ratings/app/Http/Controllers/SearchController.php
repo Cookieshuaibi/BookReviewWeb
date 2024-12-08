@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
@@ -13,7 +14,7 @@ class SearchController extends Controller
 
     public function __construct()
     {
-         /*@var $bookService \App\Services\BookService */
+        /*@var $bookService \App\Services\BookService */
         $this->bookService = app('bookService');
     }
 
@@ -24,7 +25,7 @@ class SearchController extends Controller
         if (!empty($query)) {
             $validator = Validator::make($request->all(), [
                 'query' => ['required', 'string', 'max:20', 'min:3', 'regex:/^[a-zA-Z0-9\s]+$/'],
-                'page' => ['nullable', 'integer','min:1'],
+                'page' => ['nullable', 'integer', 'min:1'],
             ]);
 
             if ($validator->fails()) {
@@ -36,18 +37,18 @@ class SearchController extends Controller
             $page = $response->json()['page'] ?? 1;
             $perPage = 10;
             $paginator = new LengthAwarePaginator(
-                $books, 
-                $total, 
-                $perPage, 
-                $page, 
-                ['path' => $request->url(), 'query' => $request->query()] 
+                $books,
+                $total,
+                $perPage,
+                $page,
+                ['path' => $request->url(), 'query' => $request->query()]
             );
             $paginator->setPath($request->url());
             $paginator->appends(['query' => $query]);
 
             return view('search.search', compact('books', 'query', 'paginator'));
-        }else{
-            return view('search.search', compact('books','query'));
+        } else {
+            return view('search.search', compact('books', 'query'));
         }
     }
 }

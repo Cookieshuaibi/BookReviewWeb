@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Controllers;
 
 //use App\Models\Role;
@@ -18,13 +19,15 @@ class UserController extends Controller
         $user = User::find($user_id);
         $reviews = Reviews::with('reviewable')->where('user_id', $user_id)->paginate(10);
         $books = Books::where('user_id', $user_id)->paginate(10);
-        return view('user.profile', compact('user','reviews', 'books'));
+        return view('user.profile', compact('user', 'reviews', 'books'));
     }
-    public function myReviews(Request $request){
+
+    public function myReviews(Request $request)
+    {
         $user_id = Auth::user()->id;
-        $user = User::with(['reviews','reviews.reviewable'])->find($user_id);
+        $user = User::with(['reviews', 'reviews.reviewable'])->find($user_id);
         $reviews = Reviews::with('reviewable')->where('user_id', $user_id)->paginate(10);
-        return view('user.my_reviews', compact('user','reviews'));
+        return view('user.my_reviews', compact('user', 'reviews'));
     }
 
     public function show(Request $request, User $user)
@@ -33,9 +36,9 @@ class UserController extends Controller
             abort(404);
         }
 
-       $booksPublished = $user->books()->paginate(5, ['*'], 'books_page'); // 使用 'books_page' 作为页码参数
+        $booksPublished = $user->books()->paginate(5, ['*'], 'books_page'); // 使用 'books_page' 作为页码参数
 
-       $bookReviews = $user->reviews()->with('reviewable')->paginate(5, ['*'], 'reviews_page'); // 使用 'reviews_page' 作为页码参数
+        $bookReviews = $user->reviews()->with('reviewable')->paginate(5, ['*'], 'reviews_page'); // 使用 'reviews_page' 作为页码参数
 
         return view('user.show', compact('user', 'booksPublished', 'bookReviews'));
     }
